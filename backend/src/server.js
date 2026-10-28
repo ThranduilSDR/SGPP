@@ -17,6 +17,15 @@ app.get("/api/health", (req, res) => {
 // Configurando a rota da documentação (Implementar Swagger futuramente)
 
 //Routes - API
+const AuthRoutes = require(`../routes/AuthRoutes`)
+const UserRoutes = require(`../routes/UserRoutes`)
+const ProductRoutes = require(`./routes/ProductRoutes`)
+const CartRoutes = require(`./routes/CartRoutes`)
+
+app.use("/api/auth", AuthRoutes)
+app.use("/api/users", UserRoutes)
+app.use("/api/products", ProductRoutes)
+app.use("/api/cart", CartRoutes)
 
 // Middleware tratador de erros Express 5 - erros lançados dentro de
 // handlers async chegam aqui sozinhos, sem precisar de try/catch em todo lugar.

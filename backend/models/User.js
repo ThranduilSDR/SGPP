@@ -33,7 +33,7 @@ const User = sequelize.define(
     tableName: "users",
     underscored: true, // createdAt vira created_at, passwordHash vira password_hash
     // A senha nunca sai nas consultas normais.
-    // No login, use User.scope('withPassword').findOne(...) para trazê-la.
+    // No login, necessário User.scope('withPassword').findOne(...) para trazê-la.
     defaultScope: { attributes: { exclude: ["passwordHash"] } },
     scopes: { withPassword: {} },
   },
