@@ -10,8 +10,8 @@ const sequelize = new Sequelize(
     port: Number(process.env.DB_PORT),
     dialect: "postgres",
     //para verificar via console o SQL gerado
-    logging: console.log,
-    //logging: false,
+    //logging: console.log,
+    logging: false,
   },
 )
 

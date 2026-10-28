@@ -33,7 +33,7 @@ class UserController {
       }
 
       // Comparar senha informada com o hash salvo no banco
-      const isPasswordValid = await bcrypt.compare(password, user.password_hash)
+      const isPasswordValid = await bcrypt.compare(password, user.passwordHash)
       if (!isPasswordValid) {
         return res.status(401).json({ message: "Credenciais inválidas." })
       }
@@ -83,13 +83,13 @@ class UserController {
 
       // Gerar Hash da Senha
       const salt = await bcrypt.genSalt(10)
-      const password_hash = await bcrypt.hash(password, salt)
+      const passwordHash = await bcrypt.hash(password, salt)
 
       // Criar Usuário
       const newUser = await User.create({
         name,
         email,
-        password_hash,
+        passwordHash,
         role: role || "OPERATOR",
         active: true,
       })
@@ -264,7 +264,7 @@ class UserController {
       // 3. Verificar se a senha atual está correta
       const isPasswordValid = await bcrypt.compare(
         oldPassword,
-        user.password_hash,
+        user.passwordHash,
       )
       if (!isPasswordValid) {
         return res
@@ -284,7 +284,7 @@ class UserController {
       const newPasswordHash = await bcrypt.hash(newPassword, salt)
 
       // 6. Atualizar a senha e salvar
-      user.password_hash = newPasswordHash
+      user.passwordHash = newPasswordHash
       await user.save()
 
       return res.status(200).json({ message: "Senha alterada com sucesso." })
