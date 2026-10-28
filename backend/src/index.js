@@ -1,0 +1,16 @@
+const app = require("./server")
+const { sequelize } = require("../models")
+
+async function startServer() {
+  await sequelize.authenticate() // falha com mensagem clara se o banco estiver fora
+  await sequelize.sync() // cria as tabelas que ainda não existem (migrations ficam para depois)
+  console.log("Conectado ao PostgreSQL com sucesso!")
+
+  const port = process.env.PORT || 5000
+  app.listen(port, () => console.log(`API rodando em http://localhost:${port}`))
+}
+
+startServer().catch((err) => {
+  console.error("Falha ao iniciar:", err)
+  process.exit(1)
+})
