@@ -9,7 +9,7 @@ app.use(express.json())
 // Public folder for images
 app.use(express.static(`public`))
 
-// Rota de teste: serve para provar que o servidor está de pé.
+// Rota de teste: Através de um GET na URL retorna json que o servidor está respondendo.
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" })
 })

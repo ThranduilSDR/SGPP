@@ -9,10 +9,10 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
     dialect: "postgres",
+    //para verificar via console o SQL gerado
+    logging: console.log,
     //logging: false,
   },
-  //para verificar via console o SQL gerado
-  console.log(logging),
 )
 
 module.exports = sequelize

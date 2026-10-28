@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize")
-const sequelize = require("../config/db")
+const sequelize = require("../db/conn")
 
 // A chave estrangeira user_id é criada em models/index.js, nas associações.
 const Cart = sequelize.define(
