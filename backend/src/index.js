@@ -6,6 +6,7 @@ async function startServer() {
   await sequelize.sync() // cria as tabelas que ainda não existem (migrations ficam para depois)
   console.log("Conectado ao PostgreSQL com sucesso!")
 
+  //chamada para conexão com banco passando a porta disponível na variavel protegida de ambiente .env
   const port = process.env.PORT || 5000
   app.listen(port, () => console.log(`API rodando em http://localhost:${port}`))
 }

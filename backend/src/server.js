@@ -6,6 +6,9 @@ const app = express()
 app.use(cors({ origin: process.env.CORS_ORIGIN }))
 app.use(express.json())
 
+// Public folder for images
+app.use(express.static(`public`))
+
 // Rota de teste: serve para provar que o servidor está de pé.
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" })
