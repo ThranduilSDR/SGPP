@@ -4,6 +4,16 @@ const Product = require("./Product")
 const Cart = require("./Cart")
 const CartItem = require("./CartItem")
 
+// Uma categoria tem vários produtos. RESTRICT impede apagar categoria que tem produtos
+// (a API deve orientar a desativação).
+Category.hasMany(Product, {
+  foreignKey: { name: "categoryId", allowNull: false },
+  as: "products",
+  onDelete: "RESTRICT",
+})
+Product.belongsTo(Category, { foreignKey: "categoryId", as: "category" })
+
+// ---------- Carrinho ----------
 // Um usuário tem um carrinho (user_id único na tabela carts).
 User.hasOne(Cart, {
   foreignKey: { name: "userId", allowNull: false, unique: true },
@@ -26,4 +36,37 @@ Product.hasMany(CartItem, {
 })
 CartItem.belongsTo(Product, { foreignKey: "productId", as: "product" })
 
-module.exports = { sequelize, User, Product, Cart, CartItem }
+// ---------- Pedidos ----------
+
+// Um usuário faz vários pedidos. RESTRICT: usuário com pedidos é desativado, não apagado.
+User.hasMany(Order, {
+  foreignKey: { name: "userId", allowNull: false },
+  onDelete: "RESTRICT",
+})
+Order.belongsTo(User, { foreignKey: "userId", as: "user" })
+
+// Um pedido tem vários itens.
+Order.hasMany(OrderItem, {
+  foreignKey: { name: "orderId", allowNull: false },
+  as: "items",
+  onDelete: "CASCADE",
+})
+OrderItem.belongsTo(Order, { foreignKey: "orderId" })
+
+// Produto vendido é preservado no histórico: RESTRICT impede apagá-lo.
+Product.hasMany(OrderItem, {
+  foreignKey: { name: "productId", allowNull: false },
+  onDelete: "RESTRICT",
+})
+OrderItem.belongsTo(Product, { foreignKey: "productId", as: "product" })
+
+module.exports = {
+  sequelize,
+  User,
+  Category,
+  Product,
+  Cart,
+  CartItem,
+  Order,
+  OrderItem,
+}
