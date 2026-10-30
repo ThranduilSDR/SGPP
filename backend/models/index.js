@@ -1,17 +1,11 @@
 const sequelize = require("../db/conn")
 const User = require("./User")
+const Category = require("./Category")
 const Product = require("./Product")
 const Cart = require("./Cart")
 const CartItem = require("./CartItem")
-
-// Uma categoria tem vários produtos. RESTRICT impede apagar categoria que tem produtos
-// (a API deve orientar a desativação).
-Category.hasMany(Product, {
-  foreignKey: { name: "categoryId", allowNull: false },
-  as: "products",
-  onDelete: "RESTRICT",
-})
-Product.belongsTo(Category, { foreignKey: "categoryId", as: "category" })
+const Order = require("./Order")
+const OrderItem = require("./OrderItem")
 
 // ---------- Carrinho ----------
 // Um usuário tem um carrinho (user_id único na tabela carts).
@@ -59,6 +53,15 @@ Product.hasMany(OrderItem, {
   onDelete: "RESTRICT",
 })
 OrderItem.belongsTo(Product, { foreignKey: "productId", as: "product" })
+
+// Uma categoria tem vários produtos. RESTRICT impede apagar categoria que tem produtos
+// (a API deve orientar a desativação).
+Category.hasMany(Product, {
+  foreignKey: { name: "categoryId", allowNull: false },
+  as: "products",
+  onDelete: "RESTRICT",
+})
+Product.belongsTo(Category, { foreignKey: "categoryId", as: "category" })
 
 module.exports = {
   sequelize,

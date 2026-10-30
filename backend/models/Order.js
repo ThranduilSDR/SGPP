@@ -1,6 +1,6 @@
 const crypto = require("node:crypto")
 const { DataTypes } = require("sequelize")
-const sequelize = require("../config/db")
+const sequelize = require("../db/conn")
 
 // Exemplo: PED-20261030-A1B2C3. Não é sequencial; a unicidade é garantida
 // pela constraint UNIQUE do banco (colisão é muito improvável).

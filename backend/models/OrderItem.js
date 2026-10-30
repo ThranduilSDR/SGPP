@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize")
-const sequelize = require("../config/db")
+const sequelize = require("../db/conn")
 
 // Cada linha guarda uma "fotografia" do produto no momento da venda.
 // O histórico nunca deve ser recalculado a partir da tabela products.
