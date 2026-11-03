@@ -14,9 +14,9 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok" })
 })
 
-// Configurando a rota da documentação (Implementar Swagger futuramente)
-//
-//
+// Importar e inicializar o Swagger
+const swaggerDocs = require("../swagger")
+swaggerDocs(app)
 
 //Routes - API
 const AuthRoutes = require(`../routes/AuthRoutes`)
