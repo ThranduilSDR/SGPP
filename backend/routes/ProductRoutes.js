@@ -39,11 +39,15 @@ module.exports = router
  *           schema:
  *             type: object
  *             required:
+ *               - code
  *               - name
  *               - price
  *               - stock
  *               - categoryId
  *             properties:
+ *               code:
+ *                 type: string
+ *                 example: NTB-199
  *               name:
  *                 type: string
  *                 example: Notebook Gamer

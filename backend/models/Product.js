@@ -12,7 +12,7 @@ const Product = sequelize.define(
     code: { type: DataTypes.STRING, allowNull: false, unique: true },
     name: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT },
-    // Atenção: o driver pg devolve DECIMAL como string. Converta com Number() ao calcular.
+    // O driver pg devolve DECIMAL como string. Converter com Number() ao calcular.
     price: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,

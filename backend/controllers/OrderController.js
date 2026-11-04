@@ -19,12 +19,14 @@ class OrderController {
         where: { userId },
         include: {
           model: CartItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
         transaction: t,
       })
 
-      if (!cart || !cart.CartItems || cart.CartItems.length === 0) {
+      // Valida se o carrinho existe e se a propriedade 'items' contém registros
+      if (!cart || !cart.items || cart.items.length === 0) {
         await t.rollback()
         return res.status(400).json({ message: "O seu carrinho está vazio." })
       }
@@ -32,44 +34,52 @@ class OrderController {
       let totalAmount = 0
 
       // Validar estoque e calcular o valor total
-      for (const item of cart.CartItems) {
-        if (!item.Product || item.Product.stock < item.quantity) {
+      for (const item of cart.items) {
+        if (!item.product || item.product.stock < item.quantity) {
           await t.rollback()
           return res.status(422).json({
-            message: `Estoque insuficiente para o produto: ${item.Product?.name || "Desconhecido"}`,
+            message: `Estoque insuficiente para o produto: ${item.product?.name || "Desconhecido"}`,
           })
         }
-        totalAmount += item.Product.price * item.quantity
+        totalAmount += Number(item.product.price) * Number(item.quantity)
       }
 
       // Criar o Pedido
       const order = await Order.create(
         {
           userId,
-          totalAmount,
-          status: "PENDING",
+          subtotal: totalAmount,
+          total: totalAmount,
+          status: "FINALIZADO",
         },
         { transaction: t },
       )
 
       // Criar os itens do pedido e atualizar o estoque
-      for (const item of cart.CartItems) {
+
+      for (const item of cart.items) {
+        const unitPrice = Number(item.product.price)
+        const quantity = Number(item.quantity)
+        const subtotal = Number((unitPrice * quantity).toFixed(2)) // Arredonda para 2 casas e converte para Number
+
         await OrderItem.create(
           {
             orderId: order.id,
             productId: item.productId,
-            quantity: item.quantity,
-            price: item.Product.price,
+            productName: item.product.name,
+            unitPrice: unitPrice,
+            quantity: quantity,
+            subtotal: subtotal,
           },
           { transaction: t },
         )
 
-        // Decrementar estoque
-        item.Product.stock -= item.quantity
-        await item.Product.save({ transaction: t })
+        // Decrementar estoque do produto associado
+        item.product.stock -= item.quantity
+        await item.product.save({ transaction: t })
       }
 
-      // Esvaziar o carrinho do utilizador
+      // Esvaziar o carrinho do utilizador após o checkout bem-sucedido
       await CartItem.destroy({
         where: { cartId: cart.id },
         transaction: t,
@@ -81,7 +91,8 @@ class OrderController {
       const createdOrder = await Order.findByPk(order.id, {
         include: {
           model: OrderItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
       })
 
@@ -104,7 +115,8 @@ class OrderController {
         where: whereClause,
         include: {
           model: OrderItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
         order: [["createdAt", "DESC"]],
       })
@@ -125,7 +137,8 @@ class OrderController {
       const order = await Order.findByPk(id, {
         include: {
           model: OrderItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
       })
 
@@ -155,7 +168,8 @@ class OrderController {
       const order = await Order.findByPk(id, {
         include: {
           model: OrderItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
         transaction: t,
       })
@@ -173,24 +187,24 @@ class OrderController {
           .json({ message: "Não tem permissão para cancelar este pedido." })
       }
 
-      // Regra de negócio: Só pode cancelar se o pedido estiver PENDENTE
-      if (order.status !== "PENDING") {
+      // Regra de negócio: Só pode cancelar se o pedido estiver Finalizado
+      if (order.status !== "FINALIZADO") {
         await t.rollback()
         return res.status(422).json({
           message: `O pedido não pode ser cancelado pois encontra-se no status: ${order.status}`,
         })
       }
 
-      // Devolver os itens de volta ao estoque dos produtos
-      for (const item of order.OrderItems) {
-        if (item.Product) {
-          item.Product.stock += item.quantity
-          await item.Product.save({ transaction: t })
+      // Devolver os itens de volta ao estoque dos produtos (usando order.items e item.product)
+      for (const item of order.items) {
+        if (item.product) {
+          item.product.stock += item.quantity
+          await item.product.save({ transaction: t })
         }
       }
 
       // Atualizar status do pedido para CANCELLED
-      order.status = "CANCELLED"
+      order.status = "CANCELADO"
       await order.save({ transaction: t })
 
       await t.commit()

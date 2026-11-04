@@ -34,7 +34,7 @@ class CategoryController {
     try {
       const { id } = req.params
       const category = await Category.findByPk(id, {
-        include: [{ model: Product }],
+        include: [{ model: Product, as: "products" }],
       })
 
       if (!category) {

@@ -6,7 +6,7 @@ const authMiddleware = require("../middlewares/authMiddleware")
 
 // Rotas acessíveis a qualquer utilizador autenticado (Consulta)
 router.post("/", authMiddleware, CartController.addItem)
-router.delete("/items", authMiddleware, CartController.removeAll)
+router.delete("/", authMiddleware, CartController.removeAll)
 router.put("/:id", authMiddleware, CartController.setQty)
 router.delete("/:id", authMiddleware, CartController.removeItem)
 
@@ -14,7 +14,7 @@ module.exports = router
 
 /**
  * @swagger
- * /api/cart/:
+ * /api/cart/items:
  *   post:
  *     summary: Adiciona um produto ao carrinho do utilizador
  *     tags: [Itens do Carrinho]
@@ -44,7 +44,6 @@ module.exports = router
  *       422:
  *         description: Estoque insuficiente.
  *
- * /api/cart/items:
  *   delete:
  *     summary: Remove todos os itens do carrinho (Esvazia o carrinho)
  *     tags: [Itens do Carrinho]
@@ -54,7 +53,7 @@ module.exports = router
  *       200:
  *         description: Carrinho esvaziado com sucesso.
  *
- * /api/cart/{id}:
+ * /api/cart/items/{id}:
  *   put:
  *     summary: Atualiza a quantidade de um item específico no carrinho
  *     tags: [Itens do Carrinho]

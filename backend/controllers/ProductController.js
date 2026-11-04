@@ -4,12 +4,28 @@ class ProductController {
   // Criar Produto (Admin)
   static async create(req, res, next) {
     try {
-      const { name, description, price, stock, categoryId } = req.body
+      const { code, name, description, price, stock, categoryId } = req.body
 
-      if (!name || price === undefined || stock === undefined || !categoryId) {
+      if (
+        !name ||
+        !code ||
+        price === undefined ||
+        stock === undefined ||
+        !categoryId
+      ) {
         return res.status(400).json({
-          message: "Nome, preço, estoque e categoria são obrigatórios.",
+          message: "Código, nome, preço, estoque e categoria são obrigatórios.",
         })
+      }
+
+      //valida se o código do produto já existe
+      const existingCode = await Product.findOne({
+        where: { code: code },
+      })
+      if (existingCode) {
+        return res
+          .status(422)
+          .json({ message: "Código já cadastrado no sistema." })
       }
 
       // Valida se a categoria informada existe
@@ -21,6 +37,7 @@ class ProductController {
       }
 
       const product = await Product.create({
+        code,
         name,
         description,
         price,
@@ -38,7 +55,9 @@ class ProductController {
   static async getAll(req, res, next) {
     try {
       const products = await Product.findAll({
-        include: [{ model: Category, attributes: ["id", "name"] }],
+        include: [
+          { model: Category, as: `category`, attributes: ["id", "name"] },
+        ],
       })
       return res.status(200).json(products)
     } catch (error) {
@@ -51,7 +70,7 @@ class ProductController {
     try {
       const { id } = req.params
       const product = await Product.findByPk(id, {
-        include: [{ model: Category }],
+        include: [{ model: Category, as: "category" }],
       })
 
       if (!product) {
@@ -68,11 +87,27 @@ class ProductController {
   static async update(req, res, next) {
     try {
       const { id } = req.params
-      const { name, description, price, stock, categoryId } = req.body
+      const { code, name, description, price, stock, categoryId } = req.body
 
       const product = await Product.findByPk(id)
       if (!product) {
         return res.status(404).json({ message: "Produto não encontrado." })
+      }
+
+      // Caso código seja alterado, necessário verificar se já existe em outro usuário
+      if (code) {
+        const codeConflict = await Product.findOne({
+          where: { code: code },
+        })
+
+        // Se encontrou um produto com esse código E o ID é diferente do produto que estamos a editar:
+        if (codeConflict && codeConflict.id !== Number(id)) {
+          return res.status(422).json({
+            message: "Este código já está a ser utilizado por outro produto.",
+          })
+        }
+
+        product.code = code
       }
 
       if (categoryId) {
@@ -85,6 +120,7 @@ class ProductController {
         product.categoryId = categoryId
       }
 
+      product.code = code ?? product.code
       product.name = name ?? product.name
       product.description = description ?? product.description
       product.price = price ?? product.price

@@ -1,6 +1,27 @@
 const { Cart, CartItem, Product } = require("../models")
 
 class CartController {
+  // MÉTODO AUXILIAR PRIVADO: Calcula o total e formata o JSON
+  static _formatCart(cart) {
+    if (!cart) return null
+
+    const cartJson = cart.toJSON ? cart.toJSON() : cart
+    let totalAmount = 0
+
+    // Utiliza 'items' (conforme o alias definido no index.js)
+    if (cartJson.items && cartJson.items.length > 0) {
+      cartJson.items.forEach((item) => {
+        // Converte o DECIMAL (string) do Postgres para Number e calcula
+        const price = Number(item.product?.price || 0)
+        const quantity = Number(item.quantity || 0)
+        totalAmount += price * quantity
+      })
+    }
+
+    cartJson.totalAmount = Number(totalAmount.toFixed(2))
+    return cartJson
+  }
+
   // Obter o carrinho do usuário atual (com os itens e produtos detalhados)
   static async getCart(req, res, next) {
     try {
@@ -10,16 +31,35 @@ class CartController {
         where: { userId },
         include: {
           model: CartItem,
-          include: [Product],
+          as: "items", // Alias definido no index.js para o CartItem
+          include: [
+            {
+              model: Product,
+              as: "product", // Alias definido no index.js para o Product
+            },
+          ],
         },
       })
 
       // Se o usuário ainda não tiver um carrinho criado, criamos um vazio
       if (!cart) {
         cart = await Cart.create({ userId })
+        // Recarrega o carrinho recém-criado para trazer a estrutura de associações vazia
+        cart = await Cart.findByPk(cart.id, {
+          include: {
+            model: CartItem,
+            as: "items",
+            include: [
+              {
+                model: Product,
+                as: "product",
+              },
+            ],
+          },
+        })
       }
 
-      return res.status(200).json(cart)
+      return res.status(200).json(CartController._formatCart(cart))
     } catch (error) {
       next(error)
     }
@@ -72,11 +112,12 @@ class CartController {
       const updatedCart = await Cart.findByPk(cart.id, {
         include: {
           model: CartItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
       })
 
-      return res.status(200).json(updatedCart)
+      return res.status(200).json(CartController._formatCart(updatedCart))
     } catch (error) {
       next(error)
     }
@@ -102,7 +143,7 @@ class CartController {
 
       const cartItem = await CartItem.findOne({
         where: { id: itemId, cartId: cart.id },
-        include: [Product],
+        include: [{ model: Product, as: "product" }],
       })
 
       if (!cartItem) {
@@ -112,7 +153,7 @@ class CartController {
       }
 
       // Valida se há estoque suficiente para a nova quantidade
-      if (cartItem.Product.stock < quantity) {
+      if (cartItem.product.stock < quantity) {
         return res
           .status(422)
           .json({ message: "Estoque insuficiente para a quantidade desejada." })
@@ -125,11 +166,12 @@ class CartController {
       const updatedCart = await Cart.findByPk(cart.id, {
         include: {
           model: CartItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
       })
 
-      return res.status(200).json(updatedCart)
+      return res.status(200).json(CartController._formatCart(updatedCart))
     } catch (error) {
       next(error)
     }
@@ -139,15 +181,16 @@ class CartController {
   static async removeItem(req, res, next) {
     try {
       const userId = req.user.id
-      const { itemId } = req.params // ID do CartItem
+      const { id } = req.params // Captura diretamente o 'id' enviado na URL
 
       const cart = await Cart.findOne({ where: { userId } })
       if (!cart) {
         return res.status(404).json({ message: "Carrinho não encontrado." })
       }
 
+      // Passa a variável 'id' explicitamente para o where
       const cartItem = await CartItem.findOne({
-        where: { id: itemId, cartId: cart.id },
+        where: { id: id, cartId: cart.id },
       })
 
       if (!cartItem) {
@@ -161,11 +204,12 @@ class CartController {
       const updatedCart = await Cart.findByPk(cart.id, {
         include: {
           model: CartItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
       })
 
-      return res.status(200).json(updatedCart)
+      return res.status(200).json(CartController._formatCart(updatedCart))
     } catch (error) {
       next(error)
     }
@@ -190,11 +234,12 @@ class CartController {
       const updatedCart = await Cart.findByPk(cart.id, {
         include: {
           model: CartItem,
-          include: [Product],
+          as: "items",
+          include: [{ model: Product, as: "product" }],
         },
       })
 
-      return res.status(200).json(updatedCart)
+      return res.status(200).json(CartController._formatCart(updatedCart))
     } catch (error) {
       next(error)
     }
