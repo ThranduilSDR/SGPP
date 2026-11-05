@@ -12,12 +12,14 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 
 import { PoHttpRequestModule } from '@po-ui/ng-components';
 
+import { authInterceptor } from './core/interceptors/auth-interceptor';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     importProvidersFrom([PoHttpRequestModule]),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi([authInterceptor])),
   ],
 };
