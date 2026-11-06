@@ -22,7 +22,7 @@ export class AuthService {
   private router = inject(Router); // Ferramenta para navegar entre as rotas (redirecionar telas)
 
   // URL base da sua API backend Node.js
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = 'http://localhost:5000/api/auth';
 
   /**
    * =================================================================
@@ -55,7 +55,7 @@ export class AuthService {
    * Recebe as credenciais, dispara o POST e utiliza o operador 'tap' do RxJS
    * para escutar a resposta e executar ações colaterais sem alterar o fluxo principal.
    */
-  login(credentials: { login: string; password: string }): Observable<LoginResponse> {
+  login(credentials: { email: string; password: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
         // Verifica se a resposta da API realmente trouxe o token JWT
@@ -101,19 +101,26 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  /**
-   * Método utilitário que retorna o token puro para ser usado pelo AuthInterceptor
-   */
+  //Método utilitário que retorna o token puro para ser usado pelo AuthInterceptor
+
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  /**
-   * Recupera os dados do usuário logado convertendo a string JSON de volta para objeto
-   */
+  //Recupera os dados do usuário logado convertendo a string JSON de volta para objeto
   getUser() {
     const user = localStorage.getItem('user');
     // Se existir string salva, converte com JSON.parse; se não, retorna null
     return user ? JSON.parse(user) : null;
+  }
+
+  getMe(): Observable<any> {
+    // Faz uma requisição GET para a rota de perfil do utilizador logado
+    return this.http.get(`${this.apiUrl}/me`);
+  }
+
+  changePassword(passwordsData: { oldPassword: string; newPassword: string }): Observable<any> {
+    // Faz uma requisição POST enviando os dados de troca de senha no corpo (body)
+    return this.http.post(`${this.apiUrl}/change-password`, passwordsData);
   }
 }

@@ -1,0 +1,13 @@
+<!-- Barra Superior com o perfil corrigido para o padrão do PO-UI -->
+<po-toolbar
+  p-title="SGPP - Sistema de Gestão de Pedidos"
+  [p-profile]="{ title: user?.name || 'Utilizador', subtitle: user?.email }"
+  [p-profile-actions]="profileActions"
+>
+</po-toolbar>
+
+<!-- Menu Lateral (Sidebar) com as opções de Cadastros e Vendas -->
+<po-menu [p-menus]="menus">
+  <!-- Área onde as sub-rotas/conteúdos das páginas serão injetadas dinamicamente -->
+  <router-outlet></router-outlet>
+</po-menu>

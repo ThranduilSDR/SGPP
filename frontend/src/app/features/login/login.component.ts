@@ -13,7 +13,7 @@ import { AuthService } from '../../core/services/auth-service'; // Importa o ser
     <po-page-login
       p-title="SGPP - Gestão de Pedidos"
       [p-loading]="loading"
-      (p-login)="onLogin($event)"
+      (p-login-submit)="onLogin($event)"
     >
     </po-page-login>
   `,
@@ -31,13 +31,13 @@ export class LoginComponent {
     this.loading = true; // Ativa o estado de carregamento na tela
 
     // Mapeia os dados recebidos do componente visual para o formato esperado pelo backend
-    const credentials = {
-      login: formData.login,
+    const credenciais = {
+      email: formData.login,
       password: formData.password,
     };
 
     // Aciona o método de login do AuthService
-    this.authService.login(credentials).subscribe({
+    this.authService.login(credenciais).subscribe({
       next: () => {
         this.loading = false; // Desativa o carregamento
         this.poNotification.success('Autenticação realizada com sucesso!'); // Exibe balão verde de sucesso
