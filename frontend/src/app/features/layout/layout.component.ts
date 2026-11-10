@@ -23,16 +23,10 @@ export class LayoutComponent {
     { label: 'Sair', action: () => this.authService.logout(), icon: 'po-icon-exit' },
   ];
 
-  // Configuração do Menu Lateral baseado estritamente no escopo
+  // Configuração do Menu Lateral
   public menus: Array<PoMenuItem> = [
-    // {
-    //   label: 'Home',
-    //   action: () => this.router.navigate(['/home']),
-    //   icon: 'po-icon-cart',
-    //   shortLabel: 'Home',
-    // },
     {
-      label: 'Catálogo / Carrinho',
+      label: 'Catálogo',
       action: () => this.router.navigate(['/home/catalogo']),
       icon: 'an an-shopping-cart',
       shortLabel: 'Catálogo',
@@ -50,7 +44,7 @@ export class LayoutComponent {
       label: 'Vendas',
       icon: 'an an-currency-dollar',
       subItems: [
-        { label: 'Catálogo / Carrinho', action: () => this.router.navigate(['/home/catalogo']) },
+        { label: 'Carrinho', action: () => this.router.navigate(['/home/catalogo']) },
         { label: 'Pedidos', action: () => this.router.navigate(['/home/pedidos']) },
       ],
     },

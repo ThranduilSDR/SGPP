@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth-service'; // Importa o nosso servi
 
 /**
  * =================================================================
- * FUNCIONAMENTO DO AUTHGUARD FUNCIONAL:
+ * AUTHGUARD FUNCIONAL:
  * =================================================================
  * O Guard atua como um "segurança de porta" nas rotas do Angular.
  * Antes de o navegador carregar o componente da rota (ex: /home),

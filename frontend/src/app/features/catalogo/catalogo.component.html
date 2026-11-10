@@ -1,0 +1,134 @@
+<po-page-default p-title="Catálogo de Produtos">
+  <!-- Barra de Filtros do Catálogo -->
+  <div class="po-row po-mb-2">
+    <po-input
+      class="po-md-5"
+      p-label="Pesquisar Produto"
+      p-icon="po-icon po-icon-search"
+      p-placeholder="Pesquisar por código ou nome..."
+      [(ngModel)]="filterText"
+      [ngModelOptions]="{ standalone: true }"
+      (p-change-model)="applyFilters()"
+    >
+    </po-input>
+
+    <po-select
+      class="po-md-4"
+      name="filterCategory"
+      p-label="Filtrar por Categoria"
+      p-placeholder="Todas as categorias"
+      [ngModel]="filterCategory"
+      [ngModelOptions]="{ standalone: true }"
+      [p-options]="categoryOptions"
+      p-clean="true"
+      (ngModelChange)="filterCategory = $event; applyFilters()"
+    >
+    </po-select>
+
+    <!-- Botão de Limpar Filtros perfeitamente alinhado (31px) -->
+    <div class="po-md-3" style="margin-top: 31px">
+      <po-button
+        class="po-w-12"
+        p-label="Limpar Filtros"
+        p-icon="po-icon po-icon-close"
+        p-kind="secondary"
+        (p-click)="clearFilters()"
+      >
+      </po-button>
+    </div>
+  </div>
+
+  <hr class="po-mb-3" />
+
+  <!-- Grelha de Produtos (Estilo Marketplace) -->
+  <div class="po-row" *ngIf="!loading && filteredProducts.length > 0">
+    <div class="po-md-3 po-mb-3" *ngFor="let product of filteredProducts">
+      <!-- Cartão Marketplace em HTML estruturado -->
+      <div
+        style="
+          background: #ffffff;
+          border: 1px solid #d0d5dd;
+          border-radius: 6px;
+          padding: 16px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        "
+      >
+        <!-- Área Clicável para Abrir Detalhes -->
+        <div style="cursor: pointer; flex: 1" (click)="openProductDetails(product)">
+          <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; color: #1d2939; font-weight: 600">
+            {{ product.name }}
+          </h3>
+
+          <div style="font-size: 0.85rem; color: #475467; margin-bottom: 8px">
+            <strong>Cód:</strong> {{ product.code }} | <strong>Cat:</strong>
+            {{ product.categoryName }}
+          </div>
+
+          <div
+            style="
+              font-size: 1.25rem;
+              font-weight: bold;
+              color: var(--color-brand-01, #333);
+              margin: 12px 0;
+            "
+          >
+            {{ product.price | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </div>
+
+          <div style="margin-bottom: 12px">
+            <po-tag [p-value]="getTagValue(product.stock)" [p-type]="getTagType(product.stock)">
+            </po-tag>
+          </div>
+        </div>
+
+        <!-- Área de Ação Rápida (Separada, não dispara o clique do card) -->
+        <div style="margin-top: auto; border-top: 1px solid #eaecf0; padding-top: 12px">
+          <po-button
+            class="po-w-12"
+            p-label="Adicionar"
+            p-icon="po-icon po-icon-cart"
+            [p-disabled]="product.stock <= 0"
+            (p-click)="addToCart(product)"
+          >
+          </po-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado Vazio -->
+  <div class="po-text-center po-mt-4" *ngIf="!loading && filteredProducts.length === 0">
+    <p style="font-size: 1.1rem; color: #777">
+      Nenhum produto ativo encontrado com os filtros selecionados.
+    </p>
+  </div>
+</po-page-default>
+
+<!-- Modal de Detalhes do Produto -->
+<po-modal #productModal p-title="{{ selectedProduct?.name }}">
+  <div *ngIf="selectedProduct">
+    <p><strong>Código:</strong> {{ selectedProduct.code }}</p>
+    <p><strong>Categoria:</strong> {{ selectedProduct.categoryName }}</p>
+    <p>
+      <strong>Preço:</strong> {{ selectedProduct.price | currency: 'BRL' : 'symbol' : '1.2-2' }}
+    </p>
+    <p><strong>Stock Disponível:</strong> {{ selectedProduct.stock }}</p>
+    <p style="margin-top: 15px">
+      <strong>Descrição:</strong> {{ selectedProduct.description || 'Sem descrição informada.' }}
+    </p>
+  </div>
+
+  <po-modal-footer>
+    <po-button
+      p-label="Adicionar ao Carrinho"
+      p-kind="primary"
+      [p-disabled]="selectedProduct?.stock <= 0"
+      (p-click)="addToCart(selectedProduct); productModal.close()"
+    >
+    </po-button>
+    <po-button p-label="Fechar" (p-click)="productModal.close()"> </po-button>
+  </po-modal-footer>
+</po-modal>

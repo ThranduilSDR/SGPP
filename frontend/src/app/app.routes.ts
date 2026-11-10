@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/login/login.component';
 import { LayoutComponent } from './features/layout/layout.component';
-import { HomeComponent } from './features/home/home.component';
 import { authGuard } from './core/guards/auth-guard';
+import { CatalogComponent } from './features/catalogo/catalogo.component';
 import { PerfilComponent } from './features/perfil/perfil.component';
 import { UsuariosComponent } from './features/usuarios/usuarios.component';
 import { CategoriesComponent } from './features/categorias/categorias.component';
@@ -22,7 +22,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'catalogo', pathMatch: 'full' },
 
       // Tela principal / dashboard temporária
-      { path: 'catalogo', component: HomeComponent },
+      { path: 'catalogo', component: CatalogComponent },
       { path: 'perfil', component: PerfilComponent },
       { path: 'categorias', component: CategoriesComponent },
       { path: 'produtos', component: ProductsComponent },
