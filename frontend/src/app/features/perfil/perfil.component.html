@@ -1,0 +1,54 @@
+<po-page-default p-title="Meu Perfil e Segurança">
+  <div class="po-row">
+    <!-- Widget de Informações do Utilizador (GET /me) -->
+    <div class="po-md-6 po-mb-2">
+      <po-widget p-title="Informações da Conta">
+        @if (userData) {
+          <p><strong>Nome:</strong> {{ userData.name }}</p>
+          <p><strong>E-mail:</strong> {{ userData.email }}</p>
+          <p><strong>ID do Utilizador:</strong> {{ userData.id }}</p>
+          <div class="po-mt-2">
+            <po-button p-label="Atualizar Dados" (p-click)="carregarDadosPerfil()"> </po-button>
+          </div>
+        } @else {
+          <p>A carregar informações...</p>
+        }
+      </po-widget>
+    </div>
+
+    <!-- Widget de Alteração de Senha (POST /change-password) -->
+    <div class="po-md-6 po-mb-2">
+      <po-widget p-title="Alterar Palavra-passe">
+        <form (ngSubmit)="onUpdatePassword()">
+          <div class="po-mb-2">
+            <po-password
+              p-label="Senha Atual"
+              name="oldPassword"
+              [(ngModel)]="passwordData.oldPassword"
+            >
+            </po-password>
+          </div>
+
+          <div class="po-mb-2">
+            <po-password
+              p-label="Nova Senha"
+              name="newPassword"
+              [(ngModel)]="passwordData.newPassword"
+            >
+            </po-password>
+          </div>
+
+          <div class="po-mt-2">
+            <po-button
+              p-label="Salvar Nova Senha"
+              p-kind="primary"
+              [p-loading]="loadingPassword"
+              (p-click)="onUpdatePassword()"
+            >
+            </po-button>
+          </div>
+        </form>
+      </po-widget>
+    </div>
+  </div>
+</po-page-default>

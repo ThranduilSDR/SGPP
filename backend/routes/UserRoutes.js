@@ -115,6 +115,8 @@ module.exports = router
  *                 type: string
  *               email:
  *                 type: string
+ *               password:
+ *                 type: string
  *               role:
  *                 type: string
  *     responses:
@@ -136,6 +138,17 @@ module.exports = router
  *         schema:
  *           type: string
  *         description: ID do utilizador
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               active:
+ *                 type: boolean
+ *                 description: Estado do utilizador (true para ativo, false para inativo)
+ *                 example: true
  *     responses:
  *       200:
  *         description: Status do utilizador alterado com sucesso.

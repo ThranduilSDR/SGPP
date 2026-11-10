@@ -25,15 +25,21 @@ export class LayoutComponent {
 
   // Configuração do Menu Lateral baseado estritamente no escopo
   public menus: Array<PoMenuItem> = [
+    // {
+    //   label: 'Home',
+    //   action: () => this.router.navigate(['/home']),
+    //   icon: 'po-icon-cart',
+    //   shortLabel: 'Home',
+    // },
     {
       label: 'Catálogo / Carrinho',
       action: () => this.router.navigate(['/home/catalogo']),
-      icon: 'po-icon-cart',
+      icon: 'an an-shopping-cart',
       shortLabel: 'Catálogo',
     },
     {
       label: 'Cadastros',
-      icon: 'po-icon-users',
+      icon: 'an an-users',
       subItems: [
         { label: 'Utilizadores', action: () => this.router.navigate(['/home/usuarios']) },
         { label: 'Categorias', action: () => this.router.navigate(['/home/categorias']) },
@@ -42,7 +48,7 @@ export class LayoutComponent {
     },
     {
       label: 'Vendas',
-      icon: 'po-icon-finance',
+      icon: 'an an-currency-dollar',
       subItems: [
         { label: 'Catálogo / Carrinho', action: () => this.router.navigate(['/home/catalogo']) },
         { label: 'Pedidos', action: () => this.router.navigate(['/home/pedidos']) },

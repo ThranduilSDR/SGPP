@@ -1,0 +1,89 @@
+<po-page-list
+  p-title="Gestão de Utilizadores"
+  [p-actions]="[
+    {
+      label: 'Novo Utilizador',
+      action: () => openCreateModal(),
+      icon: 'an an-user-plus',
+      kind: 'primary',
+    },
+  ]"
+>
+  <!-- Campo de pesquisa customizado com resposta em tempo real -->
+  <div class="po-row po-mb-2">
+    <po-input
+      class="po-md-6"
+      p-icon="po-icon po-icon-search"
+      p-placeholder="Pesquisar por nome ou e-mail..."
+      [(ngModel)]="filterValue"
+      [ngModelOptions]="{ standalone: true }"
+      (p-change-model)="onFilterChange($event)"
+    >
+    </po-input>
+  </div>
+
+  <!-- Tabela corporativa com a busca nativa desativada -->
+  <po-table
+    [p-columns]="columns"
+    [p-items]="filteredUsers"
+    [p-actions]="actions"
+    [p-hide-table-search]="true"
+  >
+  </po-table>
+</po-page-list>
+
+<!-- Modal Dinâmico de Criação e Edição -->
+<po-modal #userModal [p-title]="isEditing ? 'Editar Utilizador' : 'Novo Utilizador'">
+  <form [formGroup]="userForm">
+    <div class="po-row">
+      <po-input class="po-md-12 po-mb-2" p-label="Nome" formControlName="name" p-required="true">
+      </po-input>
+
+      <po-input class="po-md-12 po-mb-2" p-label="E-mail" formControlName="email" p-required="true">
+      </po-input>
+
+      <!-- Switch visível apenas na Edição para decidir se altera a senha -->
+      @if (isEditing) {
+        <po-switch
+          class="po-md-12 po-mb-2"
+          p-label="Alterar Palavra-passe?"
+          [(ngModel)]="changePassword"
+          [ngModelOptions]="{ standalone: true }"
+          (p-change)="onTogglePasswordChange($event)"
+        >
+        </po-switch>
+      }
+
+      <!-- Campo de senha: Obrigatório no cadastro, opcional/condicional na edição -->
+      @if (!isEditing || changePassword) {
+        <po-password
+          class="po-md-12 po-mb-2"
+          p-label="Palavra-passe"
+          formControlName="password"
+          [p-required]="!isEditing || changePassword"
+        >
+        </po-password>
+      }
+
+      <po-select
+        class="po-md-12 po-mb-2"
+        p-label="Perfil"
+        formControlName="role"
+        [p-options]="[
+          { label: 'Administrador', value: 'ADMIN' },
+          { label: 'Operador', value: 'OPERATOR' },
+        ]"
+      >
+      </po-select>
+    </div>
+  </form>
+
+  <po-modal-footer>
+    <po-button p-label="Cancelar" (p-click)="userModal.close()"></po-button>
+    <po-button
+      p-kind="primary"
+      [p-label]="isEditing ? 'Atualizar' : 'Salvar'"
+      (p-click)="saveUser()"
+    ></po-button>
+  </po-modal-footer>
+</po-modal>

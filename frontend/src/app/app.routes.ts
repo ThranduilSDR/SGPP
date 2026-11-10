@@ -3,6 +3,8 @@ import { LoginComponent } from './features/login/login.component';
 import { LayoutComponent } from './features/layout/layout.component';
 import { HomeComponent } from './features/home/home.component';
 import { authGuard } from './core/guards/auth-guard';
+import { PerfilComponent } from './features/perfil/perfil.component';
+import { UsuariosComponent } from './features/usuarios/usuarios.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -19,11 +21,12 @@ export const routes: Routes = [
 
       // Tela principal / dashboard temporária
       { path: 'catalogo', component: HomeComponent },
+      { path: 'perfil', component: PerfilComponent },
 
+      { path: 'usuarios', component: UsuariosComponent },
       // Espaços reservados para as próximas telas do módulo de Cadastros e Vendas
-      // { path: 'usuarios', component: UsuariosComponent },
-      // { path: 'produtos', component: ProdutosComponent },
-      // { path: 'pedidos', component: PedidosComponent },
+      //
+      //
     ],
   },
 

@@ -138,11 +138,18 @@ class UserController {
   static async update(req, res, next) {
     try {
       const { id } = req.params
-      const { name, email, role, active } = req.body
+      const { name, email, role, password, active } = req.body
 
       const user = await User.findByPk(id)
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado." })
+      }
+
+      //validações
+      if (!name || !email) {
+        return res
+          .status(400)
+          .json({ message: "Nome e e-mail são obrigatórios." })
       }
 
       // Caso e-mail seja alterado, necessário verificar se já existe em outro usuário
@@ -153,7 +160,7 @@ class UserController {
         })
 
         // Se encontrou um usuário com esse e-mail E o ID é diferente do usuário que estamos a editar:
-        if (emailConflict && emailConflict.id !== Number(id)) {
+        if (emailConflict && String(emailConflict.id) !== String(id)) {
           return res.status(422).json({
             message: "Este e-mail já está a ser utilizado por outro usuário.",
           })
@@ -165,7 +172,15 @@ class UserController {
       // Atualiza a representação completa do objeto
       user.name = name ?? user.name
       user.role = role ?? user.role
-      user.active = active ?? user.active
+      if (active !== undefined) {
+        user.active = active
+      }
+
+      // Atualiza a senha APENAS se foi informada e preenchida
+      if (password && password.trim() !== "") {
+        const salt = await bcrypt.genSalt(10)
+        user.passwordHash = await bcrypt.hash(password, salt)
+      }
 
       // Utilizando o save pois já existe a instância carregada do banco!
       await user.save()
@@ -176,6 +191,7 @@ class UserController {
         email: user.email,
         role: user.role,
         active: user.active,
+        message: "Usuário atualizado com sucesso.",
       })
     } catch (err) {
       next(err)

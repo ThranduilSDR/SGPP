@@ -1,1 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+/* Oculta os rótulos de texto lateral (true/false) de todos os po-switch da aplicação */
+po-switch .po-switch-label {
+  display: none !important;
+}
