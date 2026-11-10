@@ -39,7 +39,7 @@ import { CategoryService } from '../../core/services/category-service';
   templateUrl: './produtos.component.html',
   styleUrl: './produtos.component.scss',
 })
-export class ProductsComponent implements OnInit {
+export class ProdutosComponent implements OnInit {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private poNotification = inject(PoNotificationService);

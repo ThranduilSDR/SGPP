@@ -28,7 +28,7 @@ import { CategoryService } from '../../core/services/category-service';
   ],
   templateUrl: './categorias.component.html',
 })
-export class CategoriesComponent implements OnInit {
+export class CategoriasComponent implements OnInit {
   @ViewChild(PoModalComponent, { static: true }) categoryModal!: PoModalComponent;
 
   public loading: boolean = false;

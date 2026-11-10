@@ -5,15 +5,16 @@ import { PoModule, PoSelectOption, PoNotificationService } from '@po-ui/ng-compo
 import { forkJoin } from 'rxjs';
 import { ProductService } from '../../core/services/product-service';
 import { CategoryService } from '../../core/services/category-service';
+import { CartService } from '../../core/services/cart-service';
 
 @Component({
-  selector: 'app-catalog',
+  selector: 'app-catalogo',
   standalone: true,
   imports: [CommonModule, FormsModule, PoModule],
   templateUrl: './catalogo.component.html',
   styleUrls: ['./catalogo.component.scss'],
 })
-export class CatalogComponent implements OnInit {
+export class CatalogoComponent implements OnInit {
   public loading: boolean = false;
 
   // Listas
@@ -32,6 +33,7 @@ export class CatalogComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
+    private cartService: CartService,
     private poNotification: PoNotificationService,
   ) {}
 
@@ -127,7 +129,13 @@ export class CatalogComponent implements OnInit {
       return;
     }
 
-    // Lógica futura de carrinho (ex: serviço de carrinho ou estado global)
-    this.poNotification.success(`Produto "${product.name}" adicionado ao carrinho!`);
+    this.cartService.addItem(product.id, 1).subscribe({
+      next: () => {
+        this.poNotification.success(`Produto "${product.name}" adicionado ao carrinho!`);
+      },
+      error: (err) => {
+        this.poNotification.error(err.error?.message || 'Erro ao adicionar produto ao carrinho.');
+      },
+    });
   }
 }

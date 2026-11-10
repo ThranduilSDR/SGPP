@@ -24,29 +24,49 @@ export class LayoutComponent {
   ];
 
   // Configuração do Menu Lateral
-  public menus: Array<PoMenuItem> = [
-    {
-      label: 'Catálogo',
-      action: () => this.router.navigate(['/home/catalogo']),
-      icon: 'an an-shopping-cart',
-      shortLabel: 'Catálogo',
-    },
-    {
-      label: 'Cadastros',
-      icon: 'an an-users',
-      subItems: [
-        { label: 'Utilizadores', action: () => this.router.navigate(['/home/usuarios']) },
-        { label: 'Categorias', action: () => this.router.navigate(['/home/categorias']) },
-        { label: 'Produtos', action: () => this.router.navigate(['/home/produtos']) },
-      ],
-    },
-    {
+  public menus: Array<PoMenuItem> = [];
+
+  ngOnInit(): void {
+    this.buildMenu();
+  }
+
+  buildMenu(): void {
+    const currentUser = this.authService.getUser();
+    const isAdmin = currentUser && currentUser.role === 'ADMIN';
+
+    // Menu base visível para todos os perfis (ex: Catálogo)
+    const baseMenus: Array<PoMenuItem> = [
+      {
+        label: 'Catálogo',
+        action: () => this.router.navigate(['/home/catalogo']),
+        icon: 'an an-shopping-cart',
+        shortLabel: 'Catálogo',
+      },
+    ];
+
+    // Se o usuário for administrador, adiciona o menu de Cadastros
+    if (isAdmin) {
+      baseMenus.push({
+        label: 'Cadastros',
+        icon: 'an an-users',
+        subItems: [
+          { label: 'Utilizadores', action: () => this.router.navigate(['/home/usuarios']) },
+          { label: 'Categorias', action: () => this.router.navigate(['/home/categorias']) },
+          { label: 'Produtos', action: () => this.router.navigate(['/home/produtos']) },
+        ],
+      });
+    }
+
+    // Menu de Vendas visível para todos
+    baseMenus.push({
       label: 'Vendas',
       icon: 'an an-currency-dollar',
       subItems: [
-        { label: 'Carrinho', action: () => this.router.navigate(['/home/catalogo']) },
+        { label: 'Carrinho', action: () => this.router.navigate(['/home/carrinho']) },
         { label: 'Pedidos', action: () => this.router.navigate(['/home/pedidos']) },
       ],
-    },
-  ];
+    });
+
+    this.menus = baseMenus;
+  }
 }
