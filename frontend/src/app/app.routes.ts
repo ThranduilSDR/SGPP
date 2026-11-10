@@ -5,6 +5,7 @@ import { HomeComponent } from './features/home/home.component';
 import { authGuard } from './core/guards/auth-guard';
 import { PerfilComponent } from './features/perfil/perfil.component';
 import { UsuariosComponent } from './features/usuarios/usuarios.component';
+import { CategoriesComponent } from './features/categorias/categorias.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -22,11 +23,9 @@ export const routes: Routes = [
       // Tela principal / dashboard temporária
       { path: 'catalogo', component: HomeComponent },
       { path: 'perfil', component: PerfilComponent },
+      { path: 'categorias', component: CategoriesComponent },
 
       { path: 'usuarios', component: UsuariosComponent },
-      // Espaços reservados para as próximas telas do módulo de Cadastros e Vendas
-      //
-      //
     ],
   },
 

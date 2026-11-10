@@ -1,0 +1,56 @@
+<po-page-list p-title="Gestão de Categorias">
+  <div
+    class="po-row po-mb-2"
+    style="display: flex; justify-content: space-between; align-items: center"
+  >
+    <po-input
+      class="po-md-6"
+      p-icon="po-icon po-icon-search"
+      p-placeholder="Pesquisar por nome ou descrição..."
+      [(ngModel)]="filterValue"
+      [ngModelOptions]="{ standalone: true }"
+      (p-change-model)="onFilterChange($event)"
+    >
+    </po-input>
+
+    <po-button p-label="Nova Categoria" p-icon="po-icon-plus" (p-click)="openNewModal()">
+    </po-button>
+  </div>
+
+  <po-table
+    [p-columns]="columns"
+    [p-items]="filteredCategories"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-hide-table-search]="true"
+  >
+  </po-table>
+</po-page-list>
+
+<!-- Modal de Cadastro / Edição -->
+<po-modal
+  [p-title]="modalTitle"
+  [p-primary-action]="{ label: 'Guardar', action: saveCategory.bind(this) }"
+  [p-secondary-action]="{ label: 'Cancelar', action: categoryModal.close.bind(categoryModal) }"
+>
+  <form #categoryForm="ngForm">
+    <div class="po-row">
+      <po-input
+        class="po-md-12 po-mb-1"
+        p-label="Nome da Categoria"
+        p-required
+        [(ngModel)]="currentCategory.name"
+        name="name"
+      >
+      </po-input>
+
+      <po-input
+        class="po-md-12 po-mb-1"
+        p-label="Descrição"
+        [(ngModel)]="currentCategory.description"
+        name="description"
+      >
+      </po-input>
+    </div>
+  </form>
+</po-modal>
