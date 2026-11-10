@@ -6,12 +6,15 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class CategoryService {
-  private readonly apiUrl = 'http://localhost:5000/api/categories'; // Ajuste se necessário
+  private readonly apiUrl = 'http://localhost:5000/api/categories';
 
   constructor(private http: HttpClient) {}
 
   getCategories(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+  getCategoryById(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`);
   }
 
   createCategory(category: any): Observable<any> {

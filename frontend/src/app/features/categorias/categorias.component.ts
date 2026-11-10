@@ -38,6 +38,7 @@ export class CategoriesComponent implements OnInit {
 
   public currentCategory: any = { name: '', description: '' };
   public isEditMode: boolean = false;
+  public isViewMode: boolean = false;
   public modalTitle: string = 'Nova Categoria';
 
   public columns: PoTableColumn[] = [
@@ -45,7 +46,24 @@ export class CategoriesComponent implements OnInit {
     { property: 'description', label: 'Descrição' },
   ];
 
+  // Getters inteligentes: mudam os botões do modal automaticamente conforme o modo,
+  // sem precisar de tocar no código do openNewModal ou openEditModal.
+  get modalPrimaryAction() {
+    if (this.isViewMode) {
+      return { label: 'Fechar', action: () => this.categoryModal.close() };
+    }
+    return { label: 'Guardar', action: () => this.saveCategory() };
+  }
+
+  get modalSecondaryAction() {
+    if (this.isViewMode) {
+      return undefined; // Remove o botão cancelar na consulta
+    }
+    return { label: 'Cancelar', action: () => this.categoryModal.close() };
+  }
+
   public actions: PoTableAction[] = [
+    { action: this.openViewModal.bind(this), icon: 'po-icon-eye', label: 'Visualizar' }, // <--- Nova ação para atender ao requisito
     { action: this.openEditModal.bind(this), icon: 'po-icon-edit', label: 'Editar' },
     {
       action: this.deleteCategory.bind(this),
@@ -111,8 +129,24 @@ export class CategoriesComponent implements OnInit {
     );
   }
 
+  // Consulta a API por ID e abre o modal em modo de visualização (apenas leitura)
+  openViewModal(category: any): void {
+    if (category.id) {
+      this.categoryService.getCategoryById(category.id).subscribe({
+        next: (data) => {
+          this.isViewMode = true; // Ativa a leitura e oculta o botão guardar via getter
+          this.modalTitle = 'Detalhes da Categoria';
+          this.currentCategory = { ...data };
+          this.categoryModal.open();
+        },
+        error: () => this.poNotification.error('Erro ao carregar detalhes da categoria.'),
+      });
+    }
+  }
+
   openNewModal(): void {
     this.isEditMode = false;
+    this.isViewMode = false;
     this.modalTitle = 'Nova Categoria';
     this.currentCategory = { name: '', description: '' };
     this.categoryModal.open();
@@ -120,12 +154,15 @@ export class CategoriesComponent implements OnInit {
 
   openEditModal(category: any): void {
     this.isEditMode = true;
+    this.isViewMode = false;
     this.modalTitle = 'Editar Categoria';
     this.currentCategory = { ...category };
     this.categoryModal.open();
   }
 
   saveCategory(): void {
+    if (this.isViewMode) return;
+
     if (!this.currentCategory.name) {
       this.poNotification.warning('O nome da categoria é obrigatório.');
       return;

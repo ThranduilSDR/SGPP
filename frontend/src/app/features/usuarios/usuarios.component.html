@@ -32,8 +32,8 @@
   </po-table>
 </po-page-list>
 
-<!-- Modal Dinâmico de Criação e Edição -->
-<po-modal #userModal [p-title]="isEditing ? 'Editar Utilizador' : 'Novo Utilizador'">
+<!-- Modal Dinâmico (Criação, Edição e Visualização) -->
+<po-modal #userModal [p-title]="modalTitle">
   <form [formGroup]="userForm">
     <div class="po-row">
       <po-input class="po-md-12 po-mb-2" p-label="Nome" formControlName="name" p-required="true">
@@ -42,8 +42,8 @@
       <po-input class="po-md-12 po-mb-2" p-label="E-mail" formControlName="email" p-required="true">
       </po-input>
 
-      <!-- Switch visível apenas na Edição para decidir se altera a senha -->
-      @if (isEditing) {
+      <!-- Switch visível apenas na Edição e se não estiver em modo de visualização -->
+      @if (isEditing && !isViewMode) {
         <po-switch
           class="po-md-12 po-mb-2"
           p-label="Alterar Palavra-passe?"
@@ -54,8 +54,8 @@
         </po-switch>
       }
 
-      <!-- Campo de senha: Obrigatório no cadastro, opcional/condicional na edição -->
-      @if (!isEditing || changePassword) {
+      <!-- Campo de senha: Oculto na visualização, obrigatório no cadastro, opcional na edição -->
+      @if (!isViewMode && (!isEditing || changePassword)) {
         <po-password
           class="po-md-12 po-mb-2"
           p-label="Palavra-passe"
@@ -79,11 +79,17 @@
   </form>
 
   <po-modal-footer>
-    <po-button p-label="Cancelar" (p-click)="userModal.close()"></po-button>
-    <po-button
-      p-kind="primary"
-      [p-label]="isEditing ? 'Atualizar' : 'Salvar'"
-      (p-click)="saveUser()"
-    ></po-button>
+    <!-- Se estiver em modo de visualização, mostra apenas o botão Fechar -->
+    @if (isViewMode) {
+      <po-button p-kind="primary" p-label="Fechar" (p-click)="userModal.close()"></po-button>
+    } @else {
+      <!-- Caso contrário, mostra Cancelar e Salvar/Atualizar normalmente -->
+      <po-button p-label="Cancelar" (p-click)="userModal.close()"></po-button>
+      <po-button
+        p-kind="primary"
+        [p-label]="isEditing ? 'Atualizar' : 'Salvar'"
+        (p-click)="saveUser()"
+      ></po-button>
+    }
   </po-modal-footer>
 </po-modal>

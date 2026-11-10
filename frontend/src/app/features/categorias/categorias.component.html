@@ -27,11 +27,11 @@
   </po-table>
 </po-page-list>
 
-<!-- Modal de Cadastro / Edição -->
+<!-- Modal de Cadastro / Edição / Consulta-->
 <po-modal
   [p-title]="modalTitle"
-  [p-primary-action]="{ label: 'Guardar', action: saveCategory.bind(this) }"
-  [p-secondary-action]="{ label: 'Cancelar', action: categoryModal.close.bind(categoryModal) }"
+  [p-primary-action]="modalPrimaryAction"
+  [p-secondary-action]="modalSecondaryAction"
 >
   <form #categoryForm="ngForm">
     <div class="po-row">
@@ -39,6 +39,7 @@
         class="po-md-12 po-mb-1"
         p-label="Nome da Categoria"
         p-required
+        [p-readonly]="isViewMode"
         [(ngModel)]="currentCategory.name"
         name="name"
       >
@@ -47,6 +48,7 @@
       <po-input
         class="po-md-12 po-mb-1"
         p-label="Descrição"
+        [p-readonly]="isViewMode"
         [(ngModel)]="currentCategory.description"
         name="description"
       >
