@@ -6,6 +6,7 @@ import { authGuard } from './core/guards/auth-guard';
 import { PerfilComponent } from './features/perfil/perfil.component';
 import { UsuariosComponent } from './features/usuarios/usuarios.component';
 import { CategoriesComponent } from './features/categorias/categorias.component';
+import { ProductsComponent } from './features/produtos/produtos.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -24,7 +25,7 @@ export const routes: Routes = [
       { path: 'catalogo', component: HomeComponent },
       { path: 'perfil', component: PerfilComponent },
       { path: 'categorias', component: CategoriesComponent },
-
+      { path: 'produtos', component: ProductsComponent },
       { path: 'usuarios', component: UsuariosComponent },
     ],
   },

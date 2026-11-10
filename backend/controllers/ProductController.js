@@ -87,7 +87,8 @@ class ProductController {
   static async update(req, res, next) {
     try {
       const { id } = req.params
-      const { code, name, description, price, stock, categoryId } = req.body
+      const { code, name, description, price, stock, categoryId, active } =
+        req.body
 
       const product = await Product.findByPk(id)
       if (!product) {
@@ -101,7 +102,7 @@ class ProductController {
         })
 
         // Se encontrou um produto com esse código E o ID é diferente do produto que estamos a editar:
-        if (codeConflict && codeConflict.id !== Number(id)) {
+        if (codeConflict && String(codeConflict.id) !== String(id)) {
           return res.status(422).json({
             message: "Este código já está a ser utilizado por outro produto.",
           })
@@ -125,6 +126,7 @@ class ProductController {
       product.description = description ?? product.description
       product.price = price ?? product.price
       product.stock = stock ?? product.stock
+      product.active = active !== undefined ? active : product.active
 
       await product.save()
       return res.status(200).json(product)

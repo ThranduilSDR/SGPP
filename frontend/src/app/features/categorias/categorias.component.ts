@@ -15,7 +15,7 @@ import {
 import { CategoryService } from '../../core/services/category-service';
 
 @Component({
-  selector: 'app-categories',
+  selector: 'app-categorias',
   standalone: true,
   imports: [
     CommonModule,

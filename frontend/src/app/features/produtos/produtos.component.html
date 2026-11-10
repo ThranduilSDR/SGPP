@@ -1,0 +1,130 @@
+<po-page-list
+  p-title="Gestão de Produtos"
+  [p-actions]="[
+    {
+      label: 'Novo Produto',
+      action: () => openCreateModal(),
+      icon: 'an an-plus',
+      kind: 'primary',
+    },
+  ]"
+>
+  <!-- Barra de Filtros com Botão Dedicado de Limpeza -->
+  <div class="po-row po-mb-2">
+    <po-input
+      class="po-md-3"
+      p-label="Pesquisar"
+      p-icon="po-icon po-icon-search"
+      p-placeholder="Código ou nome..."
+      [(ngModel)]="filterText"
+      [ngModelOptions]="{ standalone: true }"
+      (p-change-model)="applyFilters()"
+    >
+    </po-input>
+
+    <po-select
+      class="po-md-3"
+      name="filterCategory"
+      p-label="Filtrar por Categoria"
+      p-placeholder="Todas as categorias"
+      [ngModel]="filterCategory"
+      [ngModelOptions]="{ standalone: true }"
+      [p-options]="categoryOptions"
+      (ngModelChange)="filterCategory = $event; applyFilters()"
+    >
+    </po-select>
+
+    <po-select
+      class="po-md-3"
+      name="filterStatus"
+      p-label="Filtrar por Status"
+      p-placeholder="Todos"
+      [ngModel]="filterStatus"
+      [ngModelOptions]="{ standalone: true }"
+      [p-options]="statusOptions"
+      (ngModelChange)="filterStatus = $event; applyFilters()"
+    >
+    </po-select>
+
+    <!-- Botão Dedicado para Limpar Filtros -->
+    <div class="po-md-3" style="display: flex; align-items: flex-end; padding-bottom: 2px">
+      <po-button
+        class="po-w-12"
+        p-label="Limpar Filtros"
+        p-icon="po-icon po-icon-close"
+        p-kind="secondary"
+        (p-click)="clearFilters()"
+      >
+      </po-button>
+    </div>
+  </div>
+
+  <!-- Tabela de Produtos -->
+  <po-table
+    [p-columns]="columns"
+    [p-items]="filteredProducts"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-hide-table-search]="true"
+  >
+  </po-table>
+</po-page-list>
+
+<!-- Modal Dinâmico (Criação, Edição e Visualização) -->
+<po-modal #productModal [p-title]="modalTitle">
+  <form [formGroup]="productForm">
+    <div class="po-row">
+      <po-input
+        class="po-md-6 po-mb-2"
+        p-label="Código do Produto"
+        formControlName="code"
+        p-required="true"
+      >
+      </po-input>
+
+      <po-input
+        class="po-md-6 po-mb-2"
+        p-label="Nome do Produto"
+        formControlName="name"
+        p-required="true"
+      >
+      </po-input>
+
+      <!-- Seleção de Categoria amigável por nome -->
+      <po-select
+        class="po-md-12 po-mb-2"
+        p-label="Categoria"
+        formControlName="categoryId"
+        [p-options]="categoryOptions"
+        p-required="true"
+      >
+      </po-select>
+
+      <po-number class="po-md-6 po-mb-2" p-label="Preço" formControlName="price" p-required="true">
+      </po-number>
+
+      <po-number class="po-md-6 po-mb-2" p-label="Stock" formControlName="stock" p-required="true">
+      </po-number>
+
+      <po-input class="po-md-12 po-mb-2" p-label="Descrição" formControlName="description">
+      </po-input>
+
+      <!-- Switch de Status Ativo/Inativo -->
+      <po-switch class="po-md-12 po-mb-2" p-label="Produto Ativo" formControlName="active">
+      </po-switch>
+    </div>
+  </form>
+
+  <po-modal-footer>
+    @if (isViewMode) {
+      <po-button p-kind="primary" p-label="Fechar" (p-click)="productModal.close()"></po-button>
+    } @else {
+      <po-button p-label="Cancelar" (p-click)="productModal.close()"></po-button>
+      <po-button
+        p-kind="primary"
+        [p-label]="isEditing ? 'Atualizar' : 'Salvar'"
+        (p-click)="saveProduct()"
+      ></po-button>
+    }
+  </po-modal-footer>
+</po-modal>
