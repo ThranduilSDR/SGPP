@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PoModule, PoNotificationService } from '@po-ui/ng-components';
 import { CartService } from '../../core/services/cart-service';
+import { OrderService } from '../../core/services/order-service';
 
 @Component({
   selector: 'app-carrinho',
@@ -19,6 +20,7 @@ export class CarrinhoComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
+    private orderService: OrderService,
     private poNotification: PoNotificationService,
     public router: Router,
   ) {}
@@ -106,7 +108,15 @@ export class CarrinhoComponent implements OnInit {
       this.poNotification.warning('O carrinho está vazio.');
       return;
     }
-    // Redireciona para a rota de fecho de pedido / vendas
-    this.router.navigate(['/home/checkout']); // ou '/home/pedidos/novo'
+
+    this.orderService.createOrder().subscribe({
+      next: (res: any) => {
+        this.poNotification.success(`Pedido #${res.number || res.id} gerado com sucesso!`);
+        this.router.navigate(['/home/pedidos']);
+      },
+      error: (err) => {
+        this.poNotification.error(err.error?.message || 'Erro ao gerar o pedido.');
+      },
+    });
   }
 }

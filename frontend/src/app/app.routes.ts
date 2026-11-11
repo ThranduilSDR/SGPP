@@ -9,6 +9,7 @@ import { UsuariosComponent } from './features/usuarios/usuarios.component';
 import { CategoriasComponent } from './features/categorias/categorias.component';
 import { ProdutosComponent } from './features/produtos/produtos.component';
 import { CarrinhoComponent } from './features/carrinho/carrinho.component';
+import { PedidosComponent } from './features/pedidos/pedidos.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -25,6 +26,7 @@ export const routes: Routes = [
       { path: 'catalogo', component: CatalogoComponent },
       { path: 'perfil', component: PerfilComponent },
       { path: 'carrinho', component: CarrinhoComponent },
+      { path: 'pedidos', component: PedidosComponent },
 
       // Rotas protegidas pelo adminGuard (Apenas Administradores)
       { path: 'categorias', component: CategoriasComponent, canActivate: [adminGuard] },

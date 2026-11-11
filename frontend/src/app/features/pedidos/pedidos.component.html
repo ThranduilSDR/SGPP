@@ -1,0 +1,135 @@
+<po-page-default p-title="Histórico de Pedidos">
+  <!-- Tabela Compacta de Pedidos -->
+  <div class="po-row" *ngIf="!loading && orders.length > 0">
+    <div class="po-md-12">
+      <div
+        style="background: #ffffff; border: 1px solid #d0d5dd; border-radius: 6px; overflow: hidden"
+      >
+        <table style="width: 100%; border-collapse: collapse; text-align: left">
+          <thead>
+            <tr style="background-color: #1f4e79; color: #ffffff; font-size: 0.95rem">
+              <th style="padding: 12px 16px">Nº do Pedido</th>
+              <th style="padding: 12px 16px">Data</th>
+              <th style="padding: 12px 16px">Status</th>
+              <th style="padding: 12px 16px">Total</th>
+              <th style="padding: 12px 16px; text-align: center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let order of orders; let odd = odd"
+              [style.background-color]="odd ? '#f9fafb' : '#ffffff'"
+              style="border-bottom: 1px solid #eaecf0"
+            >
+              <td style="padding: 10px 16px; font-weight: 600; color: #1d2939">
+                {{ order.number || order.id }}
+              </td>
+              <td style="padding: 10px 16px; color: #475467">
+                {{ order.createdAt || order.date | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td style="padding: 10px 16px">
+                <po-tag [p-value]="order.status" [p-type]="getStatusType(order.status)"></po-tag>
+              </td>
+              <td style="padding: 10px 16px; font-weight: 600; color: #027a48">
+                {{ order.total | currency: 'BRL' : 'symbol' : '1.2-2' }}
+              </td>
+              <td
+                style="
+                  padding: 10px 16px;
+                  text-align: center;
+                  display: flex;
+                  justify-content: center;
+                  gap: 8px;
+                "
+              >
+                <!-- Botão de Ver Detalhes -->
+                <po-button
+                  p-label="Detalhes"
+                  p-kind="tertiary"
+                  p-small="true"
+                  (p-click)="openOrderDetails(order.id, orderModal)"
+                >
+                </po-button>
+
+                <!-- Botão de Cancelar Pedido (Apenas se não estiver cancelado) -->
+                <po-button
+                  *ngIf="order.status !== 'CANCELADO'"
+                  p-label="Cancelar"
+                  p-kind="danger"
+                  p-small="true"
+                  (p-click)="cancelOrder(order.id)"
+                >
+                </po-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado Vazio -->
+  <div class="po-text-center po-mt-4" *ngIf="!loading && orders.length === 0">
+    <p style="font-size: 1.1rem; color: #777">Nenhum pedido registado até ao momento.</p>
+  </div>
+</po-page-default>
+
+<!-- Modal de Detalhes do Pedido -->
+<po-modal
+  #orderModal
+  p-title="Detalhes do Pedido: {{ selectedOrder?.number || selectedOrder?.id }}"
+>
+  <div *ngIf="selectedOrder">
+    <p>
+      <strong>Data:</strong>
+      {{ selectedOrder.createdAt || selectedOrder.date | date: 'dd/MM/yyyy HH:mm' }}
+    </p>
+    <p>
+      <strong>Status:</strong>
+      <po-tag
+        [p-value]="selectedOrder.status"
+        [p-type]="getStatusType(selectedOrder.status)"
+      ></po-tag>
+    </p>
+    <p>
+      <strong>Valor Total:</strong> {{ selectedOrder.total | currency: 'BRL' : 'symbol' : '1.2-2' }}
+    </p>
+
+    <hr style="margin: 15px 0" />
+
+    <h4 style="margin-bottom: 10px; font-weight: 600; color: #1d2939">
+      Itens do Pedido (Valores Históricos)
+    </h4>
+    <div style="max-height: 250px; overflow-y: auto">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem">
+        <thead>
+          <tr style="background-color: #f1f3f5; color: #333">
+            <th style="padding: 8px">Produto</th>
+            <th style="padding: 8px; text-align: center">Qtd</th>
+            <th style="padding: 8px">Preço Unit.</th>
+            <th style="padding: 8px">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of selectedOrder.items" style="border-bottom: 1px solid #eaecf0">
+            <td style="padding: 8px">{{ item.product?.name || item.name }}</td>
+            <td style="padding: 8px; text-align: center">{{ item.quantity }}</td>
+            <td style="padding: 8px">
+              {{ item.unitPrice || item.price | currency: 'BRL' : 'symbol' : '1.2-2' }}
+            </td>
+            <td style="padding: 8px; font-weight: 600">
+              {{
+                (item.unitPrice || item.price) * item.quantity
+                  | currency: 'BRL' : 'symbol' : '1.2-2'
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Fechar" (p-click)="orderModal.close()"></po-button>
+  </po-modal-footer>
+</po-modal>
